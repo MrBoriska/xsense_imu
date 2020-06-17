@@ -1,0 +1,32 @@
+{
+    "name": "xsense_imu",
+    "modules": [
+        "xsense_imu:xsense_imu_components"
+    ],
+    "graph": {
+        "nodes": [
+          {
+            "name": "xsense_imu",
+            "components": [
+                {
+                    "name": "message_ledger",
+                    "type": "isaac::alice::MessageLedger"
+                },
+                {
+                    "name": "xsense_imu",
+                    "type": "XSenseIMU"
+                }
+            ]
+          }
+        ],
+        "edges": []
+    },
+    "config": {
+        "xsense_imu" : {
+            "xsense_imu" : {
+                "message": "my Hello world",
+                "tick_period" : "1Hz"
+            }
+        }
+    }
+}
