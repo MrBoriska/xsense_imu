@@ -19,5 +19,7 @@ class XSenseIMU : public isaac::alice::Codelet {
   XsPortInfo mtPort;
   XsDevice* device;
   XsControl* control;
+
+  void handleError(string errorString);
 };
 ISAAC_ALICE_REGISTER_CODELET(XSenseIMU);

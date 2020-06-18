@@ -75,6 +75,7 @@
 #include <xstypes/xstimestamp.h>
 #include <xstypes/xstimeinfo.h>
 #include <memory>
+#include <unistd.h>
 
 #ifndef XSENS_NO_AUTOLIB
 #pragma comment(lib, "psapi.lib")
@@ -428,7 +429,7 @@ void Journaller::moveLogFile(const XsString& pathfile, bool purge, bool eraseOld
 	if (!oldFileName.empty())
 	{
 		if (eraseOld)
-			_unlink(oldFileName.c_str());
+			unlink(oldFileName.c_str());
 		JLDEBUG(this, "Switched from " << oldFileName << " to " << pathfile);
 	}
 	else
@@ -472,7 +473,7 @@ void Journaller::moveLogs(Journaller* target, bool eraseOld)
 	if (!oldFileName.empty())
 	{
 		if (eraseOld)
-			_unlink(oldFileName.c_str());
+			unlink(oldFileName.c_str());
 		JLDEBUG(target, "************ Moved logs from " << oldFileName);
 	}
 }

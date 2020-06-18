@@ -1,5 +1,9 @@
 #include "XSenseIMU.hpp"
 
+void XSenseIMU::handleError(string errorString) {
+	control->destruct();
+	cout << errorString << endl;
+}
 
 void XSenseIMU::start() {
     //tickPeriodically();
@@ -8,16 +12,6 @@ void XSenseIMU::start() {
     cout << "Creating XsControl object..." << endl;
 	this->control = XsControl::construct();
 	assert(control != 0);
-
-	// Lambda function for error handling
-	auto handleError = [=](string errorString)
-	{
-		control->destruct();
-		cout << errorString << endl;
-		cout << "Press [ENTER] to continue." << endl;
-		cin.get();
-		return -1;
-	};
 
 	cout << "Scanning for devices..." << endl;
 	XsPortInfoArray portInfoArray = XsScanner::scanPorts();
@@ -32,14 +26,18 @@ void XSenseIMU::start() {
 		}
 	}
 
-	if (mtPort.empty())
-		return handleError("No MTi device found. Aborting.");
+	if (mtPort.empty()) {
+		handleError("No MTi device found. Aborting.");
+		return;
+	}
 
 	cout << "Found a device with ID: " << mtPort.deviceId().toString().toStdString() << " @ port: " << mtPort.portName().toStdString() << ", baudrate: " << mtPort.baudrate() << endl;
 
 	cout << "Opening port..." << endl;
-	if (!control->openPort(mtPort.portName().toStdString(), mtPort.baudrate()))
-		return handleError("Could not open port. Aborting.");
+	if (!control->openPort(mtPort.portName().toStdString(), mtPort.baudrate())) {
+		handleError("Could not open port. Aborting.");
+		return;
+	}
 
 	// Get the device object
 	this->device = control->device(mtPort.deviceId());
@@ -53,8 +51,10 @@ void XSenseIMU::start() {
 
 	// Put the device into configuration mode before configuring the device
 	cout << "Putting device into configuration mode..." << endl;
-	if (!device->gotoConfig())
-		return handleError("Could not put device into configuration mode. Aborting.");
+	if (!device->gotoConfig()) {
+		handleError("Could not put device into configuration mode. Aborting.");
+		return;
+	}
 
 	cout << "Configuring the device..." << endl;
 
@@ -85,11 +85,14 @@ void XSenseIMU::start() {
 	}
 	else
 	{
-		return handleError("Unknown device while configuring. Aborting.");
+		handleError("Unknown device while configuring. Aborting.");
+		return;
 	}
 
-	if (!device->setOutputConfiguration(configArray))
-		return handleError("Could not configure MTi device. Aborting.");
+	if (!device->setOutputConfiguration(configArray)) {
+		handleError("Could not configure MTi device. Aborting.");
+		return;
+	}
 
 	/*
     cout << "Creating a log file..." << endl;
@@ -101,12 +104,16 @@ void XSenseIMU::start() {
     */
 
 	cout << "Putting device into measurement mode..." << endl;
-	if (!device->gotoMeasurement())
-		return handleError("Could not put device into measurement mode. Aborting.");
+	if (!device->gotoMeasurement()) {
+		handleError("Could not put device into measurement mode. Aborting.");
+		return;
+	}
 
 	cout << "Starting recording..." << endl;
-	if (!device->startRecording())
-		return handleError("Failed to start recording. Aborting.");
+	if (!device->startRecording()) {
+		handleError("Failed to start recording. Aborting.");
+		return;
+	}
 
 
     if (callback.packetAvailable()) {
@@ -190,8 +197,10 @@ void XSenseIMU::tick() {
 }
 void XSenseIMU::stop() {
     cout << "Stopping recording..." << endl;
-	if (!device->stopRecording())
-		return handleError("Failed to stop recording. Aborting.");
+	if (!device->stopRecording()) {
+		handleError("Failed to stop recording. Aborting.");
+		return;
+	}
 
     /*
 	cout << "Closing log file..." << endl;

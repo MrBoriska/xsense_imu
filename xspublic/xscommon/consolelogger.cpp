@@ -64,6 +64,7 @@
 
 #include "consolelogger.h"
 #include <iostream>
+#include <string.h>
 
 /*! \class ConsoleLogger
 	\brief A class that is used to log messages to the console
