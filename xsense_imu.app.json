@@ -4,7 +4,12 @@
     "nodes": [
       {
         "name": "xsense_imu_node",
-        "components": [],
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          }
+        ],
         "type": "XSensDriver"
       }
     ],
