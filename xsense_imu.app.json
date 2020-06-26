@@ -1,0 +1,29 @@
+{
+  "name": "xsense_imu",
+  "graph": {
+    "nodes": [
+      {
+        "name": "xsense_imu_node",
+        "components": [],
+        "type": "XSensDriver"
+      }
+    ],
+    "edges": []
+  },
+  "config": {
+    "xsense_imu_node": {
+      "PyCodelet": {
+        "device": "auto",
+        "baudrate": 0,
+        "timeout": 0.002,
+        "initial_wait": 0.1,
+        "frame_id": "imu_link",
+        "frame_local": "ENU",
+        "no_rotation_duration": 0,
+        "angular_velocity_covariance_diagonal": "[0.0004, 0.0004, 0.0004]",
+        "linear_acceleration_covariance_diagonal": "[0.0004, 0.0004, 0.0004]",
+        "orientation_covariance_diagonal": "[0.01745, 0.01745, 0.15708]"
+      }
+    }
+  }
+}
