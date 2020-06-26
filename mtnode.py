@@ -192,8 +192,10 @@ class XSensDriver(object):
 
         def convert_quat(q, source, dest=self.frame_local):
             """Convert a quaternion between ENU, NED, and NWU."""
-            def q_mult((w0, x0, y0, z0), (w1, x1, y1, z1)):
+            def q_mult(xxx_todo_changeme, xxx_todo_changeme1):
                 """Quaternion multiplication."""
+                (w0, x0, y0, z0) = xxx_todo_changeme
+                (w1, x1, y1, z1) = xxx_todo_changeme1
                 w = w0*w1 - x0*x1 - y0*y1 - z0*z1
                 x = w0*x1 + x0*w1 + y0*z1 - z0*y1
                 y = w0*y1 - x0*z1 + y0*w1 + z0*x1
@@ -712,7 +714,7 @@ class XSensDriver(object):
         self.reset_vars()
 
         # fill messages based on available data fields
-        for n, o in data.items():
+        for n, o in list(data.items()):
             try:
                 locals()[find_handler_name(n)](o)
             except KeyError:
