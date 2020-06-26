@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import serial
 import struct
 import sys
@@ -65,7 +65,7 @@ class MTDevice(object):
         else:
             lendat = struct.pack('!B', length)
         packet = b'\xFA\xFF' + struct.pack('!B', mid) + lendat + data
-        packet += struct.pack('!B', 0xFF & (-(sum(map(ord, packet[1:])))))
+        packet += struct.pack('!B', 0xFF & (-(sum(packet[1:]))))
         msg = packet
         start = time.time()
         while ((time.time()-start) < self.timeout) and self.device.read():
@@ -77,7 +77,7 @@ class MTDevice(object):
         if self.verbose:
             print("MT: Write message id 0x%02X (%s) with %d data bytes: [%s]" %\
                 (mid, getMIDName(mid), length,
-                 ' '.join("%02X" % ord(v) for v in data)))
+                 ' '.join("%02X" % v for v in data)))
 
     def waitfor(self, size=1):
         """Get a given amount of data."""
@@ -133,10 +133,10 @@ class MTDevice(object):
         start = time.time()
         while (time.time()-start) < self.timeout:
             # first part of preamble
-            if ord(self.waitfor()) != 0xFA:
+            if self.waitfor() != b'\xFA':
                 continue
             # second part of preamble
-            if ord(self.waitfor()) != 0xFF:  # we assume no timeout anymore
+            if self.waitfor() != b'\xFF':  # we assume no timeout anymore
                 continue
             # read message id and length of message
             mid, length = struct.unpack('!BB', self.waitfor(2))
@@ -1093,7 +1093,7 @@ class MTDevice(object):
                 data = data[12:]
                 output['Timestamp'] = o
             # TODO at that point data should be empty
-        except (struct.error, e):
+        except struct.error as e:
             raise MTException("could not parse MTData message.")
         if data != '':
             raise MTException("could not parse MTData message (too long).")
@@ -1136,7 +1136,7 @@ def find_baudrate(port, timeout=0.002, verbose=False, initial_wait=0.1):
     baudrates = (115200, 460800, 921600, 230400, 57600, 38400, 19200, 9600)
     for br in baudrates:
         if verbose:
-            print("Trying %d bd:" % br,)
+            print("Trying %d bd:" % br, end=' ')
             sys.stdout.flush()
         try:
             mt = MTDevice(port, br, timeout=timeout, verbose=verbose,
@@ -1160,7 +1160,7 @@ def find_baudrate(port, timeout=0.002, verbose=False, initial_wait=0.1):
 # Documentation for stand alone usage
 ################################################################
 def usage():
-    prnt = """MT device driver.
+        print("""MT device driver.
 Usage:
     ./mtdevice.py [commands] [opts]
 
@@ -1416,8 +1416,7 @@ Deprecated options:
             115200/(PERIOD * (SKIPFACTOR + 1))
         If the value is 0xffff, no data is send unless a ReqData request
         is made.
-"""
-    print(prnt)
+""")
 
 
 ################################################################
@@ -1433,7 +1432,7 @@ def main():
              'synchronization=', 'setUTCtime=', 'timeout=', 'initial-wait=']
     try:
         opts, args = getopt.gnu_getopt(sys.argv[1:], shopts, lopts)
-    except (getopt.GetoptError, e):
+    except getopt.GetoptError as e:
         print(e)
         usage()
         return 1
@@ -1570,27 +1569,27 @@ def main():
         if 'inspect' in actions:
             inspect(mt, device, baudrate)
         if 'change-baudrate' in actions:
-            print("Changing baudrate from %d to %d:" % (baudrate, new_baudrate),)
+            print("Changing baudrate from %d to %d:" % (baudrate, new_baudrate), end=' ')
             sys.stdout.flush()
             mt.ChangeBaudrate(new_baudrate)
             print(" Ok")  # should we test that it was actually ok?
         if 'reset' in actions:
-            print("Restoring factory defaults",)
+            print("Restoring factory defaults", end=' ')
             sys.stdout.flush()
             mt.RestoreFactoryDefaults()
             print(" Ok")  # should we test that it was actually ok?
         if 'configure' in actions:
-            print("Changing output configuration",)
+            print("Changing output configuration", end=' ')
             sys.stdout.flush()
             mt.SetOutputConfiguration(output_config)
             print(" Ok")  # should we test that it was actually ok?
         if 'synchronization' in actions:
-            print("Changing synchronization settings"),
+            print("Changing synchronization settings", end=' ')
             sys.stdout.flush()
             mt.SetSyncSettings(sync_settings)
             print(" Ok")  # should we test that it was actually ok?
         if 'setUTCtime' in actions:
-            print("Setting UTC time in the device"),
+            print("Setting UTC time in the device", end=' ')
             sys.stdout.flush()
             mt.SetUTCTime(UTCtime_settings[6],
                           UTCtime_settings[0],
@@ -1610,12 +1609,12 @@ def main():
                 print("output-settings is required to configure the device in "\
                     "legacy mode.")
                 return 1
-            print("Configuring in legacy mode",)
+            print("Configuring in legacy mode", end=' ')
             sys.stdout.flush()
             mt.configure_legacy(mode, settings, period, skipfactor)
             print(" Ok")        # should we test it was actually ok?
         if 'xkf-scenario' in actions:
-            print("Changing XKF scenario",)
+            print("Changing XKF scenario", end=' ')
             sys.stdout.flush()
             mt.SetCurrentScenario(new_xkf)
             print("Ok")
@@ -1625,7 +1624,7 @@ def main():
             #     print mode, settings, length
             try:
                 while True:
-                    print (mt.read_measurement(mode, settings))
+                    print(mt.read_measurement(mode, settings))
             except KeyboardInterrupt:
                 pass
     except MTErrorMessage as e:
@@ -1658,7 +1657,7 @@ def inspect(mt, device, baudrate):
                                   for s in settings)
 
     def try_message(m, f, formater=None, *args, **kwargs):
-        print('  %s ' % m,)
+        print('  %s ' % m, end=' ')
         try:
             if formater is not None:
                 print(formater(f(*args, **kwargs)))

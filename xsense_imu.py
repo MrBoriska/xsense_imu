@@ -37,10 +37,10 @@ class XSensDriver(Codelet):
         return v
 
     def start(self):
-        device = self.get_param('~device', 'auto')
-        baudrate = self.get_param('~baudrate', 0)
-        timeout = self.get_param('~timeout', 0.002)
-        initial_wait = self.get_param('~initial_wait', 0.1)
+        device = self.get_param('device', 'auto')
+        baudrate = self.get_param('baudrate', 0)
+        timeout = self.get_param('timeout', 0.002)
+        initial_wait = self.get_param('initial_wait', 0.1)
         if device == 'auto':
             devs = mtdevice.find_devices(timeout=timeout,
                                          initial_wait=initial_wait)
@@ -73,9 +73,9 @@ class XSensDriver(Codelet):
                           " during this time." % no_rotation_duration)
             self.mt.SetNoRotation(no_rotation_duration)
 
-        self.frame_id = self.get_param('~frame_id', '/base_imu')
+        self.frame_id = self.get_param('frame_id', '/base_imu')
 
-        self.frame_local = self.get_param('~frame_local', 'ENU')
+        self.frame_local = self.get_param('frame_local', 'ENU')
 
         #self.angular_velocity_covariance = matrix_from_diagonal(
         #    get_param_list('~angular_velocity_covariance_diagonal', [radians(0.025)] * 3)
