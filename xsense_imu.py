@@ -30,14 +30,16 @@ class XSensDriver(Codelet):
         try:
             v = getattr(self.config, name)
             if v is None: raise KeyError
-            print("Info: Found parameter: %s, value: %s" % (name, str(v)))
+            self.log_info("Found parameter: %s, value: %s" % (name, str(v)))
         except KeyError:
             v = default
-            print("Warn: Cannot find value for parameter: %s, assigning "
+            self.log_warning("Cannot find value for parameter: %s, assigning "
                         "default: %s" % (name, str(v)))
         return v
 
     def start(self):
+        self.log_info("XSenseDriver starting by time %f" % self.app.clock.time)
+
         device = self.get_param('device', 'auto')
         baudrate = self.get_param('baudrate', 0)
         timeout = self.get_param('timeout', 0.002)
@@ -47,21 +49,19 @@ class XSensDriver(Codelet):
                                          initial_wait=initial_wait)
             if devs:
                 device, baudrate = devs[0]
-                print("Info: Detected MT device on port %s @ %d bps"
+                self.log_info("Detected MT device on port %s @ %d bps"
                               % (device, baudrate))
             else:
-                print("Fatal: could not find proper MT device.")
-                print("Could not find proper MT device.")
+                self.log_critical("Could not find proper MT device.")
                 return
         if not baudrate:
             baudrate = mtdevice.find_baudrate(device, timeout=timeout,
                                               initial_wait=initial_wait)
         if not baudrate:
-            print("Fatal: could not find proper baudrate.")
-            print("Could not find proper baudrate.")
+            self.log_critical("Could not find proper baudrate.")
             return
 
-        print("Info: MT node interface: %s at %d bd." % (device, baudrate))
+        self.log_info("MT node interface: %s at %d bd." % (device, baudrate))
         self.mt = mtdevice.MTDevice(device, baudrate, timeout,
                                     initial_wait=initial_wait)
 
@@ -69,7 +69,7 @@ class XSensDriver(Codelet):
         # (only mark iv devices)
         no_rotation_duration = self.get_param('no_rotation_duration', 0)
         if no_rotation_duration:
-            print("Info: Starting the no-rotation procedure to estimate the "
+            self.log_info("Starting the no-rotation procedure to estimate the "
                           "gyroscope biases for %d s. Please don't move the IMU"
                           " during this time." % no_rotation_duration)
             self.mt.SetNoRotation(no_rotation_duration)
@@ -79,6 +79,7 @@ class XSensDriver(Codelet):
         self.frame_local = self.get_param('frame_local', 'ENU')
 
 
+        
 
 
         """
