@@ -110,7 +110,7 @@ class XSensDriver(Codelet):
 
         # publishers created at first use to reduce topic clutter
         self.diag_pub = self.isaac_proto_tx("JsonProto", "diagnostics")
-        self.imu_pub = self.isaac_proto_tx("ImuProto", "imu_data")
+        self.imu_pub = self.isaac_proto_tx("ImuProto", "imu_raw")
         #self.raw_gps_pub = None
         #self.vel_pub = None
         #self.mag_pub = None
@@ -599,7 +599,9 @@ class XSensDriver(Codelet):
             try:
                 dqw, dqx, dqy, dqz = (o['Delta q0'], o['Delta q1'],
                     o['Delta q2'], o['Delta q3'])
-                now = time.time() # todo: need get timestamp by Isaac SDK!
+
+                now = self.tick_time
+
                 if self.last_delta_q_time is None:
                     self.last_delta_q_time = now
                 else:
@@ -760,12 +762,12 @@ class XSensDriver(Codelet):
             try:
                 locals()[find_handler_name(n)](o)
             except KeyError:
-                print("Warn: Unknown MTi data packet: '%s', ignoring." % n)
+                #self.log_warning("Unknown MTi data packet: '%s', ignoring." % n)
+                pass
 
         # publish available information
         if self.pub_imu:
-            #self.imu_msg.header = self.h
-            print(self.imu_pub.msg.proto)
+            #self.log_debug(self.imu_pub.msg.proto)
             self.imu_pub.publish()
 
 
