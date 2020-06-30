@@ -1,0 +1,92 @@
+{
+  "name": "svo_realsense_xsens_imu",
+  "modules": [
+    "perception:stereo_visual_odometry",
+    "realsense",
+    "utils",
+    "viewers"
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "name": "xsense_imu_node",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          }
+        ]
+      }
+    ],
+    "edges": []
+  },
+  "config": {
+    "xsense_imu_node": {
+      "PyCodelet": {
+        "device": "auto",
+        "baudrate": 0,
+        "timeout": 0.002,
+        "initial_wait": 0.1,
+        "frame_id": "imu_link",
+        "base_frame_id": "left_ir_camera",
+        "frame_local": "ENU",
+        "no_rotation_duration": 0,
+        "angular_velocity_covariance_diagonal": "[0.0004, 0.0004, 0.0004]",
+        "linear_acceleration_covariance_diagonal": "[0.0004, 0.0004, 0.0004]",
+        "orientation_covariance_diagonal": "[0.01745, 0.01745, 0.15708]"
+      }
+    },
+    "websight": {
+      "WebsightServer": {
+        "port": 3000,
+        "ui_config": {
+          "windows": {
+            "Realsense - Left IR": {
+              "renderer": "2d",
+              "dims": {
+                "width": 640,
+                "height": 360
+              },
+              "channels": [
+                {
+                  "name": "svo_realsense_xsens_imu/viewers/ColorCameraViewer/Color",
+                  "active": true
+                }
+              ]
+            },
+            "Camera Pose": {
+              "renderer": "3d",
+              "dims": {
+                "width": 1100,
+                "height": 450
+              },
+              "channels": [
+                {
+                  "name": "svo_realsense_xsens_imu/tracker/StereoVisualOdometry/current_pose",
+                  "active": true
+                },
+                {
+                  "name": "svo_realsense_xsens_imu/tracker/StereoVisualOdometry/pose_trail",
+                  "active": true
+                }
+              ]
+            },
+            "xy": {
+              "renderer": "plot",
+              "channels": [
+                { "name": "svo_realsense_xsens_imu/tracker/StereoVisualOdometry/vo.pos_x" },
+                { "name": "svo_realsense_xsens_imu/tracker/StereoVisualOdometry/vo.pos_y" }
+              ]
+            },
+            "up": {
+              "renderer": "plot",
+              "channels": [
+                { "name": "svo_realsense_xsens_imu/tracker/StereoVisualOdometry/vo.pos_z" }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

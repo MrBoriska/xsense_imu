@@ -4,7 +4,12 @@
     "nodes": [
       {
         "name": "xsense_imu_node",
-        "components": [],
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          }
+        ],
         "type": "XSensDriver"
       }
     ],
@@ -18,6 +23,7 @@
         "timeout": 0.002,
         "initial_wait": 0.1,
         "frame_id": "imu_link",
+        "base_frame_id": "base_link",
         "frame_local": "ENU",
         "no_rotation_duration": 0,
         "angular_velocity_covariance_diagonal": "[0.0004, 0.0004, 0.0004]",
