@@ -18,6 +18,9 @@ import calendar
 import serial
 import traceback
 
+import numpy
+import quaternion
+
 # transform Euler angles or matrix into quaternions
 from math import radians, sqrt, atan2
 
@@ -75,11 +78,30 @@ class XSensDriver(Codelet):
             self.mt.SetNoRotation(no_rotation_duration)
 
         self.frame_id = self.get_param('frame_id', '/base_imu')
+        self.base_frame_id = self.get_param('base_frame_id', '/base_link')
 
         self.frame_local = self.get_param('frame_local', 'ENU')
 
 
-        
+        '''
+        Provides pose of lhs_T_rhs at specified app time (in seconds) to Isaac app pose tree.
+
+        Args:
+            lhs (str): left-hand-side frame name
+            rhs (str): right-hand-side frame name
+            app_time (float): Isaac app time in seconds
+            pose (List): tuple of (numpy.quaternion, numpy.array(3)) for rotation and translation
+                accordingly.
+        '''
+
+        self.app.atlas.set_pose(
+            self.frame_id,
+            self.base_frame_id,
+            self.app.clock.time,[
+                numpy.quaternion(1, 0, 0, 0),
+                numpy.array([-0.035, 0, 0])
+            ]
+        )
 
 
         """
@@ -135,7 +157,7 @@ class XSensDriver(Codelet):
 
         # This part will be run once in the beginning of the program
         # We can tick periodically, on every message, or blocking. See documentation for details.
-        self.tick_periodically(1/500)
+        self.tick_periodically(1/400)
 
     def tick(self):
         # This part will be run at every tick. We are ticking periodically in this example.
