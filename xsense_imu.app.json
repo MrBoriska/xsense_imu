@@ -26,9 +26,11 @@
         "base_frame_id": "base_link",
         "frame_local": "ENU",
         "no_rotation_duration": 0,
-        "angular_velocity_covariance_diagonal": "[0.0004, 0.0004, 0.0004]",
-        "linear_acceleration_covariance_diagonal": "[0.0004, 0.0004, 0.0004]",
-        "orientation_covariance_diagonal": "[0.01745, 0.01745, 0.15708]"
+        "quat_from_base_frame": [1, 0, 0, 0],
+        "trans_from_base_frame": [0, 0, 0],
+        "angular_velocity_covariance_diagonal": [0.0004, 0.0004, 0.0004],
+        "linear_acceleration_covariance_diagonal": [0.0004, 0.0004, 0.0004],
+        "orientation_covariance_diagonal": [0.01745, 0.01745, 0.15708]
       }
     }
   }
