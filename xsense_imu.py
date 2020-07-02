@@ -6,12 +6,6 @@ import sys
 import mtdevice
 import mtdef
 
-#from std_msgs.msg import Header, String, UInt16
-#from sensor_msgs.msg import Imu, NavSatFix, NavSatStatus, MagneticField,\
-#    FluidPressure, Temperature, TimeReference
-#from geometry_msgs.msg import TwistStamped, PointStamped
-#from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
-
 import time
 import datetime
 import calendar
@@ -20,6 +14,8 @@ import traceback
 
 import numpy
 import quaternion
+
+import json5
 
 # transform Euler angles or matrix into quaternions
 from math import radians, sqrt, atan2
@@ -40,6 +36,13 @@ class XSensDriver(Codelet):
                         "default: %s" % (name, str(v)))
         return v
 
+    def matrix_from_diagonal(self, diagonal):
+        n = len(diagonal)
+        matrix = [0] * n * n
+        for i in range(0, n):
+            matrix[i*n + i] = diagonal[i]
+        return tuple(matrix)
+
     def start(self):
         self.log_info("XSenseDriver starting by time %f" % self.app.clock.time)
 
@@ -59,7 +62,7 @@ class XSensDriver(Codelet):
                 return
         if not baudrate:
             baudrate = mtdevice.find_baudrate(device, timeout=timeout,
-                                              initial_wait=initial_wait)
+                                                      initial_wait=initial_wait)
         if not baudrate:
             self.log_critical("Could not find proper baudrate.")
             return
@@ -79,42 +82,31 @@ class XSensDriver(Codelet):
 
         self.frame_id = self.get_param('frame_id', '/base_imu')
         self.base_frame_id = self.get_param('base_frame_id', '/base_link')
-
         self.frame_local = self.get_param('frame_local', 'ENU')
-
-
-        '''
-        Provides pose of lhs_T_rhs at specified app time (in seconds) to Isaac app pose tree.
-
-        Args:
-            lhs (str): left-hand-side frame name
-            rhs (str): right-hand-side frame name
-            app_time (float): Isaac app time in seconds
-            pose (List): tuple of (numpy.quaternion, numpy.array(3)) for rotation and translation
-                accordingly.
-        '''
-
+        
+        # Provides XSense pose to Isaac app pose tree.
+        q = self.get_param("quat_from_base_frame", [1,0,0,0])
+        t = self.get_param("trans_from_base_frame", [0,0,0])
         self.app.atlas.set_pose(
-            self.frame_id,
-            self.base_frame_id,
-            self.app.clock.time,[
-                numpy.quaternion(1, 0, 0, 0),
-                numpy.array([-0.035, 0, 0])
-            ]
+            self.frame_id, # lhs (str): left-hand-side frame name
+            self.base_frame_id, # rhs (str): right-hand-side frame name
+            self.app.clock.time, # app_time (float): Isaac app time in seconds
+            # pose (List): tuple of (numpy.quaternion, numpy.array(3)) for rotation and translation accordingly.
+            (numpy.quaternion(*q), numpy.array(t)) 
         )
 
+        # Covariances... (not used in Isaac SDK)
+        self.angular_velocity_covariance = self.matrix_from_diagonal(
+            self.get_param('angular_velocity_covariance_diagonal', [radians(0.025)] * 3)
+        )
+        self.linear_acceleration_covariance = self.matrix_from_diagonal(
+            self.get_param('linear_acceleration_covariance_diagonal', [0.0004] * 3)
+        )
+        self.orientation_covariance = self.matrix_from_diagonal(
+            self.get_param("orientation_covariance_diagonal", [radians(1.), radians(1.), radians(9.)])
+        )
 
         """
-        self.angular_velocity_covariance = matrix_from_diagonal(
-            get_param_list('~angular_velocity_covariance_diagonal', [radians(0.025)] * 3)
-        )
-        self.linear_acceleration_covariance = matrix_from_diagonal(
-            get_param_list('~linear_acceleration_covariance_diagonal', [0.0004] * 3)
-        )
-        self.orientation_covariance = matrix_from_diagonal(
-            get_param_list("~orientation_covariance_diagonal", [radians(1.), radians(1.), radians(9.)])
-        )
-
         self.diag_msg = DiagnosticArray()
         self.stest_stat = DiagnosticStatus(name='mtnode: Self Test', level=1,
                                            message='No status information')
@@ -124,11 +116,6 @@ class XSensDriver(Codelet):
                                          message='No status information')
         self.diag_msg.status = [self.stest_stat, self.xkf_stat, self.gps_stat]
         """
-
-
-
-
-
 
 
         # publishers created at first use to reduce topic clutter
@@ -791,6 +778,7 @@ class XSensDriver(Codelet):
         # publish available information
         if self.pub_imu:
             #self.log_debug(self.imu_pub.msg.proto)
+
             self.imu_pub.publish()
 
 
