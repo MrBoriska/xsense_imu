@@ -59,9 +59,9 @@
           "imu_rpy": {
             "renderer": "plot",
             "channels": [
-              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.roll_x" },
-              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.pitch_y" },
-              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.yaw_z" }
+              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.roll" },
+              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.pitch" },
+              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.yaw" }
             ]
           }
         }

@@ -89,6 +89,22 @@
                 { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.lin_acc_y" },
                 { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.lin_acc_z" }
               ]
+            },
+            "imu_ang_vel": {
+              "renderer": "plot",
+              "channels": [
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.ang_vel_x" },
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.ang_vel_y" },
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.ang_vel_z" }
+              ]
+            },
+            "imu_rpy": {
+              "renderer": "plot",
+              "channels": [
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.roll" },
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.pitch" },
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.yaw" }
+              ]
             }
           }
         }
