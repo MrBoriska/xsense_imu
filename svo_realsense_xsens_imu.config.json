@@ -23,6 +23,7 @@
   "config": {
     "xsense_imu_node": {
       "PyCodelet": {
+        "freq_div": 3,
         "device": "auto",
         "baudrate": 0,
         "timeout": 0.002,
@@ -31,7 +32,7 @@
         "base_frame_id": "left_ir_camera",
         "frame_local": "ENU",
         "no_rotation_duration": 0,
-        "quat_from_base_frame": [0.5, 0.5, 0.5, 0.5],
+        "quat_from_base_frame": [0, 0, 0, 1],
         "trans_from_base_frame": [0, 0, 0],
         "angular_velocity_covariance_diagonal": [0.0004, 0.0004, 0.0004],
         "linear_acceleration_covariance_diagonal": [0.0004, 0.0004, 0.0004],
@@ -73,17 +74,36 @@
                 }
               ]
             },
-            "xy": {
+            "tracker": {
               "renderer": "plot",
               "channels": [
                 { "name": "svo_realsense_xsens_imu/tracker/StereoVisualOdometry/vo.pos_x" },
-                { "name": "svo_realsense_xsens_imu/tracker/StereoVisualOdometry/vo.pos_y" }
+                { "name": "svo_realsense_xsens_imu/tracker/StereoVisualOdometry/vo.pos_y" },
+                { "name": "svo_realsense_xsens_imu/tracker/StereoVisualOdometry/vo.pos_z" }
               ]
             },
-            "up": {
+            "imu_acc": {
               "renderer": "plot",
               "channels": [
-                { "name": "svo_realsense_xsens_imu/tracker/StereoVisualOdometry/vo.pos_z" }
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.lin_acc_x" },
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.lin_acc_y" },
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.lin_acc_z" }
+              ]
+            },
+            "imu_ang_vel": {
+              "renderer": "plot",
+              "channels": [
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.ang_vel_x" },
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.ang_vel_y" },
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.ang_vel_z" }
+              ]
+            },
+            "imu_rpy": {
+              "renderer": "plot",
+              "channels": [
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.roll" },
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.pitch" },
+                { "name": "svo_realsense_xsens_imu/xsense_imu_node/PyCodelet/imu.yaw" }
               ]
             }
           }

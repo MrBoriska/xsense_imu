@@ -18,6 +18,7 @@
   "config": {
     "xsense_imu_node": {
       "PyCodelet": {
+        "freq_div": 1,
         "device": "auto",
         "baudrate": 0,
         "timeout": 0.002,
@@ -31,6 +32,39 @@
         "angular_velocity_covariance_diagonal": [0.0004, 0.0004, 0.0004],
         "linear_acceleration_covariance_diagonal": [0.0004, 0.0004, 0.0004],
         "orientation_covariance_diagonal": [0.01745, 0.01745, 0.15708]
+      }
+    }
+  },
+  "websight": {
+    "WebsightServer": {
+      "port": 3000,
+      "ui_config": {
+        "windows": {
+          "imu_acc": {
+            "renderer": "plot",
+            "channels": [
+              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.lin_acc_x" },
+              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.lin_acc_y" },
+              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.lin_acc_z" }
+            ]
+          },
+          "imu_ang_vel": {
+            "renderer": "plot",
+            "channels": [
+              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.ang_vel_x" },
+              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.ang_vel_y" },
+              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.ang_vel_z" }
+            ]
+          },
+          "imu_rpy": {
+            "renderer": "plot",
+            "channels": [
+              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.roll" },
+              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.pitch" },
+              { "name": "xsense_imu/xsense_imu_node/PyCodelet/imu.yaw" }
+            ]
+          }
+        }
       }
     }
   }

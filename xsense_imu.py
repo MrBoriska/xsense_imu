@@ -46,6 +46,8 @@ class XSensDriver(Codelet):
     def start(self):
         self.log_info("XSenseDriver starting by time %f" % self.app.clock.time)
 
+        self.freq_div = self.get_param("freq_div", 1)
+
         device = self.get_param('device', 'auto')
         baudrate = self.get_param('baudrate', 0)
         timeout = self.get_param('timeout', 0.002)
@@ -94,6 +96,7 @@ class XSensDriver(Codelet):
             # pose (List): tuple of (numpy.quaternion, numpy.array(3)) for rotation and translation accordingly.
             (numpy.quaternion(*q), numpy.array(t)) 
         )
+        
 
         # Covariances... (not used in Isaac SDK)
         self.angular_velocity_covariance = self.matrix_from_diagonal(
@@ -144,13 +147,12 @@ class XSensDriver(Codelet):
 
         # This part will be run once in the beginning of the program
         # We can tick periodically, on every message, or blocking. See documentation for details.
-        self.tick_periodically(1/400)
+        self.tick_blocking()
+        #self.tick_periodically(1/500)
 
     def tick(self):
         # This part will be run at every tick. We are ticking periodically in this example.
-
         try:
-            self.reset_vars()
             self.spin_once()
         # Ctrl-C signal interferes with select with the ROS signal handler
         # should be OSError in python 3.?
@@ -752,6 +754,8 @@ class XSensDriver(Codelet):
         def find_handler_name(name):
             return "fill_from_%s" % (name.replace(" ", "_"))
 
+
+
         # get data
         try:
             data = self.mt.read_measurement()
@@ -764,8 +768,11 @@ class XSensDriver(Codelet):
         #self.h.stamp = rospy.Time.now()
         #self.h.frame_id = self.frame_id
 
-        # set default values
         self.reset_vars()
+
+        # Divide frequency
+        if self.tick_count % self.freq_div == 1:
+            return
 
         # fill messages based on available data fields
         for n, o in list(data.items()):
@@ -778,6 +785,16 @@ class XSensDriver(Codelet):
         # publish available information
         if self.pub_imu:
             #self.log_debug(self.imu_pub.msg.proto)
+
+            self.show("imu.lin_acc_x", self.imu_msg.linearAccelerationX, self.tick_time)
+            self.show("imu.lin_acc_y", self.imu_msg.linearAccelerationY, self.tick_time)
+            self.show("imu.lin_acc_z", self.imu_msg.linearAccelerationZ, self.tick_time)
+            self.show("imu.ang_vel_x", self.imu_msg.angularVelocityX, self.tick_time)
+            self.show("imu.ang_vel_y", self.imu_msg.angularVelocityY, self.tick_time)
+            self.show("imu.ang_vel_z", self.imu_msg.angularVelocityZ, self.tick_time)
+            self.show("imu.roll", self.imu_msg.angleRoll, self.tick_time)
+            self.show("imu.pitch", self.imu_msg.anglePitch, self.tick_time)
+            self.show("imu.yaw", self.imu_msg.angleYaw, self.tick_time)
 
             self.imu_pub.publish()
 
