@@ -1,6 +1,8 @@
 # xsense_imu
 xsense imu driver for Isaac SDK
 
+based on [ethz-asl/ethzasl_xsens_driver](https://github.com/ethz-asl/ethzasl_xsens_driver) for ROS1
+
 Support only `ImuProto` message.
 
 
