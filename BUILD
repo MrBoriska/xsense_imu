@@ -6,10 +6,13 @@ py_binary(
     srcs = [
         "__init__.py",
         "xsense_imu.py",
+        "mtdef.py",
+        "mtdevice.py"
     ],
     data = [
         "xsense_imu.app.json",
-        "//packages:py_init"
+        "//packages:py_init",
+        "requirements.txt"
     ],
     deps = [
         "//engine/pyalice"
@@ -24,7 +27,7 @@ isaac_pkg(
 isaac_py_app(
     name = "svo_realsense_xsens_imu",
     srcs = [
-        "svo_realsense_xsens_imu.py",
+        "svo_realsense_xsens_imu.py"
     ],
     data = [
         "svo_realsense_xsens_imu.config.json",
@@ -42,3 +45,4 @@ isaac_py_app(
         "//packages/xsense_imu:xsense_imu"
     ],
 )
+

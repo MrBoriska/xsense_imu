@@ -48,7 +48,10 @@ class XSensDriver(Codelet):
 
         self.freq_div = self.get_param("freq_div", 1)
 
+        base_freq = self.get_param("base_freq", 500)
+
         device = self.get_param('device', 'auto')
+
         baudrate = self.get_param('baudrate', 0)
         timeout = self.get_param('timeout', 0.002)
         initial_wait = self.get_param('initial_wait', 0.1)
@@ -147,8 +150,8 @@ class XSensDriver(Codelet):
 
         # This part will be run once in the beginning of the program
         # We can tick periodically, on every message, or blocking. See documentation for details.
-        self.tick_blocking()
-        #self.tick_periodically(1/500)
+        #self.tick_blocking()
+        self.tick_periodically(1/base_freq)
 
     def tick(self):
         # This part will be run at every tick. We are ticking periodically in this example.
