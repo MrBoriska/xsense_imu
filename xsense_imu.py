@@ -90,14 +90,14 @@ class XSensDriver(Codelet):
         self.frame_local = self.get_param('frame_local', 'ENU')
         
         # Provides XSense pose to Isaac app pose tree.
-        q = self.get_param("quat_from_base_frame", [1,0,0,0])
+        q = self.get_param("rotate_from_base_frame", [0,0,0])
         t = self.get_param("trans_from_base_frame", [0,0,0])
         self.app.atlas.set_pose(
             self.frame_id, # lhs (str): left-hand-side frame name
             self.base_frame_id, # rhs (str): right-hand-side frame name
             self.app.clock.time, # app_time (float): Isaac app time in seconds
             # pose (List): tuple of (numpy.quaternion, numpy.array(3)) for rotation and translation accordingly.
-            (numpy.quaternion(*q), numpy.array(t)) 
+            (quaternion.from_euler_angles(q), numpy.array(t)) 
         )
         
 
